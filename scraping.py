@@ -6,8 +6,8 @@ tour_dict = {}
 tour_links = []
 tour_title = []
 tour_info = []
-tour_price = []
-# Getting All tour Links
+
+# Getting All tour Links######
 
 url = "http://www.trodly.com/"
 source_code = requests.get(url)
@@ -20,10 +20,10 @@ for title in titles:
         t = t.get('href')
         t = 'http://www.trodly.com' + t
         tour_links.append(t)
+# --------------------------------------------
 
-# getting everything from tour links
+# Getting everything from tour links
 for url in tour_links:
-    # print(url)
     get_url = requests.get(url)
 
     # Titles/headings
@@ -31,13 +31,16 @@ for url in tour_links:
     get_text = get_url.text
     soup = BeautifulSoup(get_text, "html.parser")
     heading = soup.select('h1')[0].text.strip()
-    # print(heading)
     tour_title.append(heading)
+# ---------------------------------------------
 
     # Price
+
     price = soup.findAll('div', {'class': 'booking-block-header'})
     for p in price:
         p = p.find('b').text.strip()
+
+# --------------------------------------------
 
     # Info
     info = soup.findAll('div', {'class':  'activity-detail-block col-md-3 col-sm-4 col-xs-6'})
@@ -68,13 +71,16 @@ for url in tour_links:
             x['language'] = info_main1[i]
         elif info_title1[i] == 'Grade':
             x['grade'] = info_main1[i]
+
+    # adding price to tour_info list
+
     x['price'] = p
     tour_info.append(x)
 
+# making tour_dict by adding tour_title as key and tour_info as value
 for i in range(len(tour_links)):
     tour_dict.update({tour_title[i]: {'info': tour_info[i]}})
 
-
+# saving tour_dict as json file
 with open('result.json', 'w') as fp:
     json.dump(tour_dict, fp)
-    
